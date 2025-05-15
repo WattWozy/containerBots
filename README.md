@@ -20,4 +20,4 @@ Orchestrate containers to talk and exchange info
 Define a pipeline for tought process
 
 # useful
-running an llm on Ollama inside a docker container: docker exec -it <name> ollama run <model>
+running an llm on Ollama inside a docker container: docker exec -it $name ollama run $model
