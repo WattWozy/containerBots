@@ -20,4 +20,5 @@ Orchestrate containers to talk and exchange info
 Define a pipeline for tought process
 
 # useful
+instantiating a new container with Ollama: docker run -d --gpus=all -v ollama:/root/.ollama -p $port:$port --name $name ollama/ollama
 running an llm on Ollama inside a docker container: docker exec -it $name ollama run $model
