@@ -1,2 +1,23 @@
-# containerBots
+containerBots
 containerizing nlp models for chatbot and agentic purposes
+
+#DONE:
+
+Started a container
+pulled and ran Ollama on the container
+told ollama to run phi3
+
+#2DO:
+
+give the LLM some tools
+give the LLM specific context
+give the LLM some system prompts
+
+#FURTHER DOWN:
+
+Run several containers
+Orchestrate containers to talk and exchange info
+Define a pipeline for tought process
+
+# useful
+running an llm on Ollama inside a docker container: docker exec -it ollama ollama run phi3
