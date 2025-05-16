@@ -6,16 +6,18 @@ containerizing nlp models for chatbot and agentic purposes
 Started a container
 pulled and ran Ollama on the container
 told ollama to run phi3
-
-#2DO:
-
 give the LLM some tools
 give the LLM specific context
 give the LLM some system prompts
 
-#FURTHER DOWN:
-
+#2DO:
 Run several containers
+Define a Flask application for managing requests
+Define a container that can package the flask application?
+
+
+
+#FURTHER DOWN:
 Orchestrate containers to talk and exchange info
 Define a pipeline for tought process
 
