@@ -22,3 +22,15 @@ Define a pipeline for tought process
 # useful
 * instantiating a new container with Ollama: docker run -d --gpus=all -v ollama:/root/.ollama -p $port:$port --name $name ollama/ollama
 * running an llm on Ollama inside a docker container: docker exec -it $name ollama run $model
+
+# Possible folder structure: 
+/finance-bot/                    # Root repository folder
+  /app/                          # Application code
+    app.py                       # Flask application
+    langchain_bot.py             # LangChain implementation
+    langgraph_agent.py           # LangGraph implementation
+    requirements.txt             # Python dependencies
+  Dockerfile                     # Container definition
+  docker-compose.yml             # Container orchestration
+  .env                           # Environment variables (gitignored)
+  README.md                      # Documentation
