@@ -9,12 +9,16 @@ told ollama to run phi3
 give the LLM some tools
 give the LLM specific context
 give the LLM some system prompts
+ran a ec2-instance
+installed python on the ec2-instance
+installed docker on the ec2-instance
+installed docker on the container on the ec2-instance
+failed to run a tool-capable model on that docker-ollama-ec2-instance
+wrote a python flask app to listen at requests on a port
+able to send and receive info from the flask app on the ec2-machine
 
 #2DO:
-Run several containers
-Define a Flask application for managing requests
-Define a container that can package the flask application?
-
+tink-data-processing
 
 
 #FURTHER DOWN:
