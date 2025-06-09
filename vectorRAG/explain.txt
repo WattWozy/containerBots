@@ -1,0 +1,53 @@
+I'll help you create a script that automates the process of chunking files and embedding them using the appropriate model based on file extensions. First, let me check the chunker.py file to understand how it works.
+Great! I understand both the chunker and embedder components now. I'll create a new script called process_files.py that will:
+Take a directory as input
+Use the DocumentChunker to process files
+Stream chunks to the appropriate embedding model based on file extension
+Store the embeddings in ChromaDB
+Let me create this script:
+I've created a new script called process_files.py that automates the entire process. Here's what it does:
+The FileProcessor class handles the entire pipeline:
+Takes an input directory and optional collection names
+Initializes both the natural language model (from embedder.py) and CodeBERT
+Creates two separate ChromaDB collections: one for code embeddings and one for natural language embeddings
+The main processing flow:
+Recursively finds all files in the input directory
+Uses the existing DocumentChunker to split files into chunks
+Automatically determines if a file is code or natural language based on extension
+Routes chunks to the appropriate embedding model:
+Code files → CodeBERT
+Natural language files → all-MiniLM-L6-v2 model
+Stores embeddings in the appropriate ChromaDB collection with metadata
+Command-line interface:
+Apply to chunker.py
+Run
+To use this script, you'll need to:
+Make sure ChromaDB is running on localhost:8000
+Have the required dependencies installed (they're already in your environment since they're used by the other scripts)
+Run the script with a directory path and optionally specify file extensions to process
+The script will:
+Process all files in the directory and subdirectories
+Print progress as it processes each file
+Store embeddings in two separate collections for better organization
+Preserve all metadata from the chunking process
+Would you like me to add any additional features or make any modifications to this script?
+so: the script is using the two other sciprts as well right? for chunking and for embedding... or just the chunker and then loading 2 embeding models (code and nl) ? 
+
+Let me clarify how the script uses the other components:
+Chunker Usage:
+It directly imports and uses the DocumentChunker class from chunker.py
+This is used as-is, with all its functionality for splitting files into chunks
+Embedder Usage:
+It partially uses embedder.py - specifically it imports:
+Apply to chunker.py
+However, it doesn't use the embedder's ChromaDB collection directly. Instead, it creates its own collections:
+Apply to chunker.py
+Embedding Models:
+For Natural Language: It reuses the model from embedder.py (all-MiniLM-L6-v2)
+For Code: It initializes its own CodeBERT model:
+Apply to chunker.py
+So to be precise:
+Uses chunker.py directly
+Uses embedder.py partially (just the model, not the collection)
+Has its own embedding logic for both NL and code
+Would you like me to modify the script to use the embedder's collection directly instead of creating new ones? Or would you prefer to keep the separate collections for code and natural language embeddings?
