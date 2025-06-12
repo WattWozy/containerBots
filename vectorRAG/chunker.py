@@ -403,6 +403,216 @@ class DocumentChunker:
         """Check if file is markdown"""
         return Path(file_path).suffix.lower() in ['.md', '.markdown']
 
+    def chunk_file_multi_granular(self, file_path: str) -> List[DocumentChunk]:
+        """Chunk a file into three granularities (small, medium, large) and return all chunks as a single list."""
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}")
+            return []
+        
+        if not content.strip():
+            return []
+        
+        file_type = self.get_file_type(file_path)
+        base_metadata = self._get_base_metadata(file_path, file_type)
+        all_chunks = []
+
+        if file_type == 'code':
+            granularities = [
+                (750, 50),   # small
+                (1500, 100), # medium
+                (3000, 200)  # large
+            ]
+            for chunk_size, overlap in granularities:
+                if self._detect_language(file_path) in ['python', 'javascript', 'typescript', 'java', 'cpp']:
+                    # Use structured code chunking, but override chunk size/overlap
+                    chunks = self._chunk_structured_code_with_size(content, file_path, base_metadata, self._detect_language(file_path), chunk_size, overlap)
+                else:
+                    chunks = self._chunk_by_size(content, file_path, base_metadata, chunk_size, overlap)
+                all_chunks.extend(chunks)
+        else:
+            granularities = [
+                (500, 100),   # small
+                (1000, 200),  # medium
+                (2000, 400)   # large
+            ]
+            for chunk_size, overlap in granularities:
+                if self._is_markdown(file_path):
+                    chunks = self._chunk_markdown_with_size(content, file_path, base_metadata, chunk_size, overlap)
+                else:
+                    chunks = self._chunk_by_paragraphs_with_size(content, file_path, base_metadata, chunk_size, overlap)
+                all_chunks.extend(chunks)
+        return all_chunks
+
+    def _chunk_structured_code_with_size(self, content: str, file_path: str, base_metadata: Dict, language: str, chunk_size: int, overlap: int) -> List[DocumentChunk]:
+        """Chunk code by functions/classes, but with custom chunk size/overlap."""
+        chunks = []
+        lines = content.split('\n')
+        current_chunk = []
+        current_function = None
+        current_class = None
+        chunk_index = 0
+        patterns = {
+            'python': {
+                'function': r'^\s*def\s+(\w+)',
+                'class': r'^\s*class\s+(\w+)',
+                'import': r'^\s*(import|from)\s+'
+            },
+            'javascript': {
+                'function': r'^\s*(function\s+\w+|const\s+\w+\s*=.*=>|\w+\s*:\s*function)',
+                'class': r'^\s*class\s+(\w+)',
+                'import': r'^\s*(import|export)\s+'
+            },
+            'java': {
+                'function': r'^\s*(public|private|protected).*\w+\s*\(',
+                'class': r'^\s*(public|private)?\s*class\s+(\w+)',
+                'import': r'^\s*import\s+'
+            }
+        }
+        function_pattern = patterns.get(language, {}).get('function', r'^\s*\w+.*\(')
+        class_pattern = patterns.get(language, {}).get('class', r'^\s*class\s+\w+')
+        for i, line in enumerate(lines):
+            current_chunk.append(line)
+            if re.match(function_pattern, line):
+                current_function = line.strip()
+            elif re.match(class_pattern, line):
+                current_class = line.strip()
+            if (len('\n'.join(current_chunk)) > chunk_size or 
+                (i > 0 and re.match(function_pattern, line) and len(current_chunk) > 10)):
+                if len(current_chunk) > 1:
+                    chunk_metadata = base_metadata.copy()
+                    chunk_metadata.update({
+                        'current_function': current_function,
+                        'current_class': current_class,
+                        'start_line': i - len(current_chunk) + 1,
+                        'end_line': i,
+                        'chunk_type': 'code_block'
+                    })
+                    chunk = DocumentChunk(
+                        content='\n'.join(current_chunk),
+                        metadata=chunk_metadata,
+                        chunk_id='',
+                        file_path=file_path,
+                        chunk_index=chunk_index
+                    )
+                    chunks.append(chunk)
+                    chunk_index += 1
+                overlap_lines = max(1, overlap // 20)
+                current_chunk = current_chunk[-overlap_lines:] if overlap_lines < len(current_chunk) else []
+        if current_chunk:
+            chunk_metadata = base_metadata.copy()
+            chunk_metadata.update({
+                'current_function': current_function,
+                'current_class': current_class,
+                'start_line': len(lines) - len(current_chunk),
+                'end_line': len(lines),
+                'chunk_type': 'code_block'
+            })
+            chunk = DocumentChunk(
+                content='\n'.join(current_chunk),
+                metadata=chunk_metadata,
+                chunk_id='',
+                file_path=file_path,
+                chunk_index=chunk_index
+            )
+            chunks.append(chunk)
+        return chunks
+
+    def _chunk_markdown_with_size(self, content: str, file_path: str, base_metadata: Dict, chunk_size: int, overlap: int) -> List[DocumentChunk]:
+        """Chunk markdown by headers/sections, then by size with custom chunk size/overlap."""
+        chunks = []
+        sections = re.split(r'\n(?=#{1,6}\s)', content)
+        chunk_index = 0
+        for section in sections:
+            if not section.strip():
+                continue
+            header_match = re.match(r'^(#{1,6})\s+(.+)', section)
+            header_level = len(header_match.group(1)) if header_match else 0
+            header_text = header_match.group(2) if header_match else None
+            if len(section) > chunk_size:
+                sub_chunks = self._chunk_by_size(section, file_path, base_metadata, chunk_size, overlap)
+                for sub_chunk in sub_chunks:
+                    sub_chunk.metadata.update({
+                        'header_text': header_text,
+                        'header_level': header_level,
+                        'chunk_type': 'markdown_section'
+                    })
+                    sub_chunk.chunk_index = chunk_index
+                    chunks.append(sub_chunk)
+                    chunk_index += 1
+            else:
+                chunk_metadata = base_metadata.copy()
+                chunk_metadata.update({
+                    'header_text': header_text,
+                    'header_level': header_level,
+                    'chunk_type': 'markdown_section'
+                })
+                chunk = DocumentChunk(
+                    content=section,
+                    metadata=chunk_metadata,
+                    chunk_id='',
+                    file_path=file_path,
+                    chunk_index=chunk_index
+                )
+                chunks.append(chunk)
+                chunk_index += 1
+        return chunks
+
+    def _chunk_by_paragraphs_with_size(self, content: str, file_path: str, base_metadata: Dict, chunk_size: int, overlap: int) -> List[DocumentChunk]:
+        """Chunk text by paragraphs, combining small ones, with custom chunk size/overlap."""
+        paragraphs = [p.strip() for p in content.split('\n\n') if p.strip()]
+        chunks = []
+        current_chunk = []
+        current_size = 0
+        chunk_index = 0
+        for paragraph in paragraphs:
+            para_size = len(paragraph)
+            if current_size + para_size > chunk_size and current_chunk:
+                chunk_metadata = base_metadata.copy()
+                chunk_metadata.update({
+                    'chunk_type': 'text_paragraphs',
+                    'paragraph_count': len(current_chunk)
+                })
+                chunk = DocumentChunk(
+                    content='\n\n'.join(current_chunk),
+                    metadata=chunk_metadata,
+                    chunk_id='',
+                    file_path=file_path,
+                    chunk_index=chunk_index
+                )
+                chunks.append(chunk)
+                chunk_index += 1
+                if overlap > 0 and current_chunk:
+                    overlap_text = current_chunk[-1]
+                    if len(overlap_text) <= overlap:
+                        current_chunk = [overlap_text]
+                        current_size = len(overlap_text)
+                    else:
+                        current_chunk = []
+                        current_size = 0
+                else:
+                    current_chunk = []
+                    current_size = 0
+            current_chunk.append(paragraph)
+            current_size += para_size
+        if current_chunk:
+            chunk_metadata = base_metadata.copy()
+            chunk_metadata.update({
+                'chunk_type': 'text_paragraphs',
+                'paragraph_count': len(current_chunk)
+            })
+            chunk = DocumentChunk(
+                content='\n\n'.join(current_chunk),
+                metadata=chunk_metadata,
+                chunk_id='',
+                file_path=file_path,
+                chunk_index=chunk_index
+            )
+            chunks.append(chunk)
+        return chunks
+
 # Example usage and testing
 def main():
     chunker = DocumentChunker()

@@ -76,7 +76,7 @@ class FileProcessor:
                     continue
                     
                 print(f"Processing {file_path}...")
-                chunks = self.chunker.chunk_file(str(file_path))
+                chunks = self.chunker.chunk_file_multi_granular(str(file_path))
                 
                 if not chunks:
                     print(f"No chunks generated for {file_path}")

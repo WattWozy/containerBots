@@ -100,7 +100,7 @@ def print_results(results: Dict[str, List[Dict[str, Any]]]):
         print('\n=== Code Results ===')
         for i, result in enumerate(results['code'], 1):
             try:
-                metadata = result.get('metadata', {})
+                metadata = result.get('metadata') or {}
                 print(f'\n{i}. From: {metadata.get("file_name", "Unknown file")}')
                 print(f'   Type: {metadata.get("chunk_type", "Unknown type")}')
                 if result.get('distance') is not None:
@@ -113,7 +113,7 @@ def print_results(results: Dict[str, List[Dict[str, Any]]]):
         print('\n=== Natural Language Results ===')
         for i, result in enumerate(results['nl'], 1):
             try:
-                metadata = result.get('metadata', {})
+                metadata = result.get('metadata') or {}
                 print(f'\n{i}. From: {metadata.get("file_name", "Unknown file")}')
                 print(f'   Type: {metadata.get("chunk_type", "Unknown type")}')
                 if result.get('distance') is not None:
