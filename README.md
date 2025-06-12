@@ -18,12 +18,8 @@ containerizing nlp models for chatbot and agentic purposes
 * Able to send and receive info from the flask app on the ec2-machine
 
 # 2DO:
-* Tink-data-processing
-
-
-#FURTHER DOWN:
-Orchestrate containers to talk and exchange info
-Define a pipeline for tought process
+* bot querying the rag
+* imrpove performance
 
 # useful
 * instantiating a new container with Ollama: docker run -d --gpus=all -v $volumneNameInHost:/root/.ollama -p $port:$port --name $name ollama/ollama
