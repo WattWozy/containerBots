@@ -16,10 +16,11 @@ containerizing nlp models for chatbot and agentic purposes
 * Failed to run a tool-capable model on that docker-ollama-ec2-instance
 * Wrote a python flask app to listen at requests on a port
 * Able to send and receive info from the flask app on the ec2-machine
+* Bot querying the rag
 
 # 2DO:
-* bot querying the rag
-* imrpove performance
+* get more clear answer from the assistant
+* piping back the answer to the LLM (manual way)
 
 # useful
 * instantiating a new container with Ollama: docker run -d --gpus=all -v $volumneNameInHost:/root/.ollama -p $port:$port --name $name ollama/ollama
