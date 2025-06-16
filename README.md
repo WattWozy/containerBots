@@ -20,6 +20,7 @@ containerizing nlp models for chatbot and agentic purposes
 
 # 2DO:
 * get more clear answer from the assistant
+* trying langbot py again: langchain approach
 * piping back the answer to the LLM (manual way)
 
 # useful
