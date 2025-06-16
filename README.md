@@ -24,7 +24,7 @@ containerizing nlp models for chatbot and agentic purposes
 
 # useful
 * instantiating a new container with Ollama: docker run -d --gpus=all -v $volumneNameInHost:/root/.ollama -p $port:$port --name $name ollama/ollama
-* running an llm on Ollama inside a docker container: docker exec -it $name ollama run $model
+* running an llm on Ollama inside a docker container: docker exec -it $name ollama pull $model
 * information about the model ran by ollama in a container: docker exec -it $name ollama list
 
 # chroma-db setup
