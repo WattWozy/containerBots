@@ -19,7 +19,9 @@ containerizing nlp models for chatbot and agentic purposes
 * Bot querying the rag
 
 # 2DO:
-* get more clear answer from the assistant
+* run an instance that has space in disk for the bot
+* test tool calling
+* expose address and query the bot
 * trying langbot py again: langchain approach
 * piping back the answer to the LLM (manual way)
 
