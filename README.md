@@ -18,6 +18,13 @@ containerizing nlp models for chatbot and agentic purposes
 * Able to send and receive info from the flask app on the ec2-machine
 * Bot querying the rag
 
+# App: 
+* deployed an ec2-instance
+* installed ollama
+* pulled phi4-mini
+* ran phi4-mini
+* could curl back an anwer from the bot!
+
 # 2DO:
 * run an instance that has space in disk for the bot
 * test tool calling
