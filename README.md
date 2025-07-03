@@ -18,12 +18,13 @@ containerizing nlp models for chatbot and agentic purposes
 * Able to send and receive info from the flask app on the ec2-machine
 * Bot querying the rag
 
-# App: 
-* deployed an ec2-instance
-* installed ollama
-* pulled phi4-mini
-* ran phi4-mini
-* could curl back an anwer from the bot!
+# AWS commands:
+* sudo systemctl stop ollama
+* sudo systemctl disable ollama
+* unset OLLAMA_HOST: check if it is gone: env | grep OLLAMA_HOST
+* export OLLAMA_HOST="http://0.0.0.0:11434"
+* ollama serve: if you want it to run in the background: ollama serve > ollama.log 2>&1 &
+* sudo ss -tulnp | grep 11434
 
 # 2DO:
 * run an instance that has space in disk for the bot
