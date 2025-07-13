@@ -1,24 +1,27 @@
-containerBots
-containerizing nlp models for chatbot and agentic purposes
+# 🤖 **ContainerBots**
+Containerizing NLP models for chatbot and agentic purposes 
 
-# DONE:
+# 2 DO:
+- Automate processing files: chunking and vectorizing. 
+- Orchestrate containers to talk and exchange info
+- Define a pipeline for tought process
 
-* Started a container
-* Pulled and ran Ollama on the container
-* Told ollama to run phi3
-* Give the LLM some tools
-* Give the LLM specific context
-* Give the LLM some system prompts
-* Ran a ec2-instance
-* Installed python on the ec2-instance
-* Installed docker on the ec2-instance
-* Installed docker on the container on the ec2-instance
-* Failed to run a tool-capable model on that docker-ollama-ec2-instance
-* Wrote a python flask app to listen at requests on a port
-* Able to send and receive info from the flask app on the ec2-machine
-* Bot querying the rag
+# Intro: 
+- The goal for this repo is to test which configuration can be **the easiest and most stable way for creating a simple LLM ai-bot and ai-agent**. 
+- The current approach divides each model into its own separate container, hosting the LLM via Ollama. 
+- The scripts with the logic binding the tools and properties are written in python, and running live via Flask. 
+- Also to mention: we are testing the chorma-db for retrieving information from processing files. 
 
-# AWS commands:
+# 🐳 Docker useful commands: 
+* <u>Instantiating a new container with Ollama:</u>
+    - docker run -d --gpus=all -v $volumneNameInHost:/root/.ollama -p $port:$port --name $name ollama/ollama
+* <u>Running an llm on Ollama inside a docker container:</u>
+    - docker exec -it $name ollama run $model
+* <u>Information about the model ran by ollama in a container:</u> 
+    - docker exec -it $name ollama list
+
+
+# 🖥️ AWS commands:
 * sudo systemctl stop ollama
 * sudo systemctl disable ollama
 * unset OLLAMA_HOST: check if it is gone: env | grep OLLAMA_HOST
@@ -26,22 +29,14 @@ containerizing nlp models for chatbot and agentic purposes
 * ollama serve: if you want it to run in the background: ollama serve > ollama.log 2>&1 &
 * sudo ss -tulnp | grep 11434
 
-# 2DO:
-* run an instance that has space in disk for the bot
-* test tool calling
-* expose address and query the bot
-* trying langbot py again: langchain approach
-* piping back the answer to the LLM (manual way)
-
-# useful
-* instantiating a new container with Ollama: docker run -d --gpus=all -v $volumneNameInHost:/root/.ollama -p $port:$port --name $name ollama/ollama
-* running an llm on Ollama inside a docker container: docker exec -it $name ollama pull $model
-* information about the model ran by ollama in a container: docker exec -it $name ollama list
-
 # chroma-db setup
-* pulling the chroma-db image: docker pull chromadb/chroma:latest
-* running the image: docker run -d --name chroma-db -p 8000:8000 -v $(pwd)/chroma_data:/chroma/chroma -e IS_PERSISTENT=TRUE -e PERSIST_DIRECTORY=/chroma/chroma chromadb/chroma:latest
-* (OPTIONAL) verifying it is running: curl http://localhost:8000/api/v1/heartbeat
+* <u>Pulling the chroma-db image:</u> 
+    - docker pull chromadb/chroma:latest
+* <u>Running the image:</u> 
+    - docker run -d --name chroma-db -p 8000:8000 -v $(pwd)/chroma_data:/chroma/chroma -e IS_PERSISTENT=TRUE -e PERSIST_DIRECTORY=/chroma/chroma chromadb/chroma:latest
+* <u>(OPTIONAL) verifying it is running:</u> 
+    - curl http://localhost:8000/api/v1/heartbeat
+    - down here a simple python script to check status
 ```
 import chromadb
 
