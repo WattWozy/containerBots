@@ -31,15 +31,27 @@ Containerizing NLP models for chatbot and agentic purposes
 
 # qdrant storage setup
 * <u> Pulling the qdrant-db image </u>
-    - docker pull qdrant
-* <u> Running the image </u>
-    - docker run --name -d --name qdrant -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+```
+docker pull qdrant
+```
+* <u> installing pip qdrant </u>
+```
+pip install qdrant-client sentence-transformers
 
+```
+* <u> Running the image </u>
+```
+docker run --name -d --name qdrant -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+```
 # chroma-db setup
-* <u>Pulling the chroma-db image:</u> 
-    - docker pull chromadb/chroma:latest
-* <u>Running the image:</u> 
-    - docker run -d --name chroma-db -p 8000:8000 -v $(pwd)/chroma_data:/chroma/chroma -e IS_PERSISTENT=TRUE -e PERSIST_DIRECTORY=/chroma/chroma chromadb/chroma:latest
+* <u>Pulling the chroma-db image:</u>
+```
+docker pull chromadb/chroma:latest
+```
+* <u>Running the image:</u>
+```
+docker run -d --name chroma-db -p 8000:8000 -v $(pwd)/chroma_data:/chroma/chroma -e IS_PERSISTENT=TRUE -e PERSIST_DIRECTORY=/chroma/chroma chromadb/chroma:latest
+```
 * <u>(OPTIONAL) verifying it is running:</u> 
     - curl http://localhost:8000/api/v1/heartbeat
     - down here a simple python script to check status
