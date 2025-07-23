@@ -29,6 +29,12 @@ Containerizing NLP models for chatbot and agentic purposes
 * ollama serve: if you want it to run in the background: ollama serve > ollama.log 2>&1 &
 * sudo ss -tulnp | grep 11434
 
+# qdrant storage setup
+* <u> Pulling the qdrant-db image </u>
+    - docker pull qdrant
+* <u> Running the image </u>
+    - docker run --name -d --name qdrant -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+
 # chroma-db setup
 * <u>Pulling the chroma-db image:</u> 
     - docker pull chromadb/chroma:latest
