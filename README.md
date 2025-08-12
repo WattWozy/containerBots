@@ -5,6 +5,7 @@ Containerizing NLP models for chatbot and agentic purposes
 - Automate processing files: chunking and vectorizing. 
 - Orchestrate containers to talk and exchange info
 - Define a pipeline for tought process
+- check how the graduates are doing their multi bot communication repo
 
 # Intro: 
 - The goal for this repo is to test which configuration can be **the easiest and most stable way for creating a simple LLM ai-bot and ai-agent**. 
